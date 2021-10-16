@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debounce</title>
+</head>
+<body>
+    <input class="input" autocomplete="off" spellcheck="off" oninput="debounce(main,1000)" type="text" id="movie" placeholder="Enter movie name" />
+
+    <div id="movies"></div>
+    <div id="trend"></div>
+</body>
+<style>
+     body{
+            background-color:#192133 ;
+        }
+#movies {
+      height: 300px;
+      width: 400px;
+      color:rgb(248, 244, 244);
+      border: none;
+      
+      border-top: none;
+      margin-left:35%;
+      outline:none;
+
+    }
+    .input{
+            height:50px;
+            width:400px;
+            border:none;
+            border-bottom:1px solid gray; 
+            
+            margin-left:35%;
+            
+            background-color:#192133;
+
+            color: rgb(248, 244, 244);
+            outline:none;
+
+            font-family: Arial, Helvetica, sans-serif;
+            font-size:15px;
+            
+        }
+        ::placeholder{
+            color:solid rgb(248, 244, 244);
+            font-size:15px;}
+
+
+            #trend{
+                height:50%;
+                width:100%;
+                border:solid 1px black;
+            }
+
+     .a{
+         height:500px;
+         width:25%;
+         margin-left:2%;
+         margin-right:2%;
+         margin-top:2%;
+         margin-bottom:2%;
+         float:left;
+         color: rgb(248, 244, 244);
+         border-radius: 10px;
+            background-color:#334366
+     }
+     .b{
+         color: rgb(248, 244, 244);
+         text-align:center;
+     }
+
+
+
+
+</style>
+
+<script>
+
+var timerId;
+      let movies_div=document.getElementById('movies');
+      async function searchMovies(movie_name){
+        var res= await fetch(`http://www.omdbapi.com/?s=${movie_name}&apikey=f2d15635`);
+              var data= await res.json();
+              return data;
+      }
+      function appendMovies(movies){
+          if(movies===undefined){
+              return false;
+          }
+                movies_div.innerHTML=null;
+          movies.forEach(function(movie){
+              let p=document.createElement('p');
+              p.innerText=movie.Title;
+              movies_div.append(p);
+          })
+      }
+
+      async function main(){
+          let name=document.getElementById('movie').value;
+
+        if(name.length<3){
+            return false;
+        }
+          let res=await searchMovies(name);
+          console.log("res:",res);
+          let movies=res.Search;
+          appendMovies(movies);
+      }
+
+
+
+      function debounce(func,delay){
+        if(timerId){
+            clearInterval(timerId)
+        }
+     timerId= setTimeout(function(){
+          func();
+      },delay);
+      }
+    async function trend(){
+        let res=await fetch('https://api.themoviedb.org/3/movie/popular?api_key=9924b9a1464a971c6e032f0012a561c7');
+        let data=await res.json();
+        console.log(data);
+        var t=document.getElementById('trend');
+        for(i=0;i<data.results.length;i++){
+
+            var a=document.createElement('div');
+            a.setAttribute('class','a');
+
+            var b=document.createElement('h2');
+            b.style="height:50px;"
+            b.innerHTML=data.results[i].title;
+            b.setAttribute('class','b');
+            var im=document.createElement('img');
+            im.src=`https://image.tmdb.org/t/p/w500/${data.results[i].poster_path}`;
+            im.style="height:50%;width:100%;" 
+            var c=document.createElement('h3');
+            c.style="text-align:center;"
+            c.innerHTML="IMDB "+data.results[i].vote_average;
+            a.append(b,im,c);
+             t.append(a);
+            
+            console.log(data.results[i].title);
+             console.log(data.results[i].vote_average);
+             console.log(data.results[i].poster_path);
+        }
+    }
+    trend();
+
+    
+
+    var a=addEventListener('keyup',function(event){
+        document.getElementById('movies').innerHTML=null;
+        event.preventDefault();
+        if(event.keyCode===13){
+            showmovie();
+            
+        }
+    })
+
+   async function showmovie(){
+        document.getElementById('trend').innerHTML=null;
+        document.getElementById('movies').innerHTML=null;
+
+
+        var userinput=document.getElementById('movie').value;
+        var res= await fetch(`http://www.omdbapi.com/?s=${userinput}&apikey=f2d15635`);
+        var data=await res.json();
+        console.log(data);
+        displaymovie(data.Search);
+
+
+
+
+    }
+
+    function displaymovie(x){
+
+        var t=document.getElementById('trend');
+
+
+        x.forEach(function(y){
+
+            if(y.Poster!="N/A"){
+
+             var h=document.createElement('div');
+             h.setAttribute('class','a');
+             h.onclick=function(){
+                 detail(y);
+                 change();
+             }
+
+             var g=document.createElement('h2');
+             g.innerHTML=y.Title;
+             g.style="height:50px;"
+
+             var k=document.createElement('img');
+             k.src=y.Poster;
+             k.style="height:50%;width:100%;"
+             k.onclick=detail();
+
+
+             h.append(g,k);
+             t.append(h);
+              
+            }
+
+             
+             
+        })
+    }
+    function detail(y){
+    localStorage.setItem('mvmv',JSON.stringify(y));
+    
+    }
+
+    
+    function change(){
+        window.location.href="details.html";
+    }
+    
+</script>
+</html>

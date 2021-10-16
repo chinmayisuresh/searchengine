@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Details</title>
+</head>
+<body>
+    
+</body>
+<style>
+    body{
+        background-color:#192133;
+    }
+    #box{
+        height:500px;
+        width:70%;
+        
+        margin-left:10%;
+        border-radius: 10px;
+            background-color:#788399
+    }
+    #border{
+        height:100%;
+        width:35%;
+        float:left;
+        
+    }
+    #name{
+        height:10%;
+        width:60%;
+        float:right;
+        text-align:center;
+        font-size:20px;
+        
+        
+    }
+    #im{
+        height:100%;
+        width:100%;
+    }
+</style>
+<script>
+  async  function show(){
+        var s=JSON.parse(localStorage.getItem('mvmv'));
+        var res1= await fetch(`http://www.omdbapi.com/?i=${s.imdbID}&apikey=f2d15635`);
+        var data1= await res1.json();
+        
+        var box=document.createElement('div');
+        box.setAttribute('id','box');
+
+        var border=document.createElement('div');
+        border.setAttribute('id','border');
+
+        var im=document.createElement('img');
+        im.setAttribute('id','im');
+        im.src=data1.Poster;
+        border.append(im);
+          
+        var name=document.createElement('div');
+        name.setAttribute('id','name');
+        name.innerHTML = "Title: "+data1.Title;
+
+
+        var dir=document.createElement('div');
+        dir.setAttribute('id','name');
+        dir.innerHTML="Director: "+data1.Director;
+
+        var gen=document.createElement('div');
+        gen.setAttribute('id','name');
+        gen.innerHTML= "Genre: "+data1.Genre;
+
+        var imdb=document.createElement('div');
+        imdb.setAttribute('id','name');
+        imdb.innerHTML="IMDB:"+data1.imdbRating;
+
+        
+
+        box.append(border,name,dir,gen,imdb);
+        document.body.append(box);
+        
+    }
+    show();
+</script>
+</html>
